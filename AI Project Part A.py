@@ -59,12 +59,11 @@ def isValid(board, row, column):
     if row>7 or row<0 or column>7 or column<0:
         return False
     potential = board[row][column]
-    if potential == "X" or potential == "@":
+    if potential == "X" or potential == "@" or potential == "O":
         return False
     else:
         return True
 
-def
 
 #Finds the number of available adjacent spaces of a piece
 def numAdj(board, row, column):
@@ -98,10 +97,39 @@ def placeWhite(board, row, column):
         board[row][column] = "O"
         return 1
 
+#Finds whether a black position has another adjacent black
+def adjBlack(board, row, column):
+    if board[row+1][column] == "@":
+        return (row-1, column)
+    if board[row-1][column] == "@":
+        return (row+1, column)
+    if board[row][column+1] == "@":
+        return (row, column-1)
+    if board[row][column-1] == "@":
+        return (row, column+1)
+    else:
+        #tuple symbolising none
+        return (0,0)
+
+#Finds whether a black position alread has an adjacent white
+def adjWhite(board, row, column):
+    if board[row+1][column] == "O":
+        return (row-1, column)
+    if board[row-1][column] == "O":
+        return (row+1, column)
+    if board[row][column+1] == "O":
+        return (row, column-1)
+    if board[row][column-1] == "O":
+        return (row, column+1)
+    else:
+        #tuple symbolising none
+        return (0,0)
+
 #Finds a winning goal state for the White player
 def findGoalState(board):
     #number of White pieces on the board
     numWhite = 0
+    numBlack = 0
     coorBlack = []
     #iterate through the board and count the number of White pieces and then remove them and also save the coor of any
     #of the Black pieces
@@ -112,43 +140,55 @@ def findGoalState(board):
                 numWhite += 1
             elif board[row][column] == "@":
                 coorBlack.append((row, column))
-
-    #iterate through the board and place the White pieces to create a winning state
+                numBlack += 1
+    #iterate through the coordinates of the Black pieces and place the White pieces to create a winning state
     for coor in coorBlack:
-        numFree = numAdj(board, coor[0], coor[1])[0]
-        spacesFree = numAdj(board, coor[0], coor[1])[1]
-
-
-        #Case 1, 1 free spot
-        if numFree == 1 and numWhite >= 0:
-            numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1])
-        #Case 2, 2 free spots
-        elif numFree == 2 and numWhite >= 0:
-            if sameRowCol(spacesFree[0], spacesFree[1]):
-                numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
-                            placeWhite(board, spacesFree[1][0], spacesFree[1][1])
-            elif spacesFree[0][0] == 0 or spacesFree[0][0] == 7 or spacesFree[0][1] == 0 or spacesFree[0][1] == 7:
+        if numWhite > 0:
+            numFree = numAdj(board, coor[0], coor[1])[0]
+            spacesFree = numAdj(board, coor[0], coor[1])[1]
+            #Case 1, 1 free spot
+            if numFree == 1 and numWhite >= 0:
                 numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1])
-            else:
-                numWhite -= placeWhite(board, spacesFree[1][0], spacesFree[1][1])
-        #Case 3, 3 free spots
-        elif numFree == 3 and numWhite >= 0:
-            if sameRowCol(spacesFree[0], spacesFree[1]):
+            #Case 2, 2 free spots
+            elif numFree == 2 and numWhite >= 0:
+                if adjBlack(board, coor[0], coor[1]) != (0, 0):
+                    numWhite -= placeWhite(board, adjBlack(board, coor[0], coor[1])[0],
+                                           adjBlack(board, coor[0], coor[1])[1])
+                elif adjWhite(board, coor[0], coor[1]) != (0, 0):
+                    numWhite -= placeWhite(board, adjWhite(board, coor[0], coor[1])[0],
+                                           adjWhite(board, coor[0], coor[1])[1])
+                elif sameRowCol(spacesFree[0], spacesFree[1]):
+                    numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                                placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+                elif spacesFree[0][0] == 0 or spacesFree[0][0] == 7 or spacesFree[0][1] == 0 or spacesFree[0][1] == 7:
+                    numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1])
+                else:
+                    numWhite -= placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+            #Case 3, 3 free spots
+            elif numFree == 3 and numWhite >= 0:
+                if adjBlack(board, coor[0], coor[1]) != (0, 0):
+                    numWhite -= placeWhite(board, adjBlack(board, coor[0], coor[1])[0],
+                                           adjBlack(board, coor[0], coor[1])[1])
+                elif adjWhite(board, coor[0], coor[1]) != (0, 0):
+                    numWhite -= placeWhite(board, adjWhite(board, coor[0], coor[1])[0],
+                                           adjWhite(board, coor[0], coor[1])[1])
+                elif sameRowCol(spacesFree[0], spacesFree[1]):
+                    numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                                placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+                elif sameRowCol(spacesFree[0], spacesFree[2]):
+                    numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                                placeWhite(board, spacesFree[2][0], spacesFree[2][1])
+                else:
+                    numWhite -= placeWhite(board, spacesFree[1][0], spacesFree[1][1]) + \
+                                placeWhite(board, spacesFree[2][0], spacesFree[2][1])
+            #final case, 4 free spots
+            elif numFree == 4 and numWhite >= 0:
                 numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
                             placeWhite(board, spacesFree[1][0], spacesFree[1][1])
-            elif sameRowCol(spacesFree[0], spacesFree[2]):
-                numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
-                            placeWhite(board, spacesFree[2][0], spacesFree[2][1])
-            else:
-                numWhite -= placeWhite(board, spacesFree[1][0], spacesFree[1][1]) + \
-                            placeWhite(board, spacesFree[2][0], spacesFree[2][1])
-        #final case, 4 free spots
-        elif numFree == 4 and numWhite >= 0:
-            numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
-                        placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+            numBlack -= 1
     return board
 
-
+#print board function
 def printBoard(board):
     print board[0]
     print board[1]

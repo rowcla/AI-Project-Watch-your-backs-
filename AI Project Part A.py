@@ -51,6 +51,114 @@ def Moves(brd, a, b):
     # finally, print out the result    
     print(count)
 
+#Finds and then solves sequence of moves required for the White player to eliminate all the Black pieces
+def Massacre(board):
+
+#Makes sure position is valid
+def isValid(board, row, column):
+    if row>7 or row<0 or column>7 or column<0:
+        return False
+    potential = board[row][column]
+    if potential == "X" or potential == "@":
+        return False
+    else:
+        return True
+
+def
+
+#Finds the number of available adjacent spaces of a piece
+def numAdj(board, row, column):
+    num = 0
+    available = []
+    if isValid(board, row+1, column):
+        num += 1
+        available.append((row+1, column))
+    if isValid(board, row-1, column):
+        num += 1
+        available.append((row-1, column))
+    if isValid(board, row, column+1):
+        num += 1
+        available.append((row, column+1))
+    if isValid(board, row, column-1):
+        num += 1
+        available.append((row, column-1))
+    return [num, available]
+
+#Checks if two positions are in the same row or column
+def sameRowCol(space1, space2):
+    if (space1[0] == space2[0]) or (space1[1] == space2[1]):
+        return True
+    else:
+        return False
+#Places the White piece in the correct spot
+def placeWhite(board, row, column):
+    if board[row][column] == "O":
+        return 0
+    else:
+        board[row][column] = "O"
+        return 1
+
+#Finds a winning goal state for the White player
+def findGoalState(board):
+    #number of White pieces on the board
+    numWhite = 0
+    coorBlack = []
+    #iterate through the board and count the number of White pieces and then remove them and also save the coor of any
+    #of the Black pieces
+    for row in range(7):
+        for column in range(7):
+            if board[row][column] == "O":
+                board[row][column] = "-"
+                numWhite += 1
+            elif board[row][column] == "@":
+                coorBlack.append((row, column))
+
+    #iterate through the board and place the White pieces to create a winning state
+    for coor in coorBlack:
+        numFree = numAdj(board, coor[0], coor[1])[0]
+        spacesFree = numAdj(board, coor[0], coor[1])[1]
+
+
+        #Case 1, 1 free spot
+        if numFree == 1 and numWhite >= 0:
+            numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1])
+        #Case 2, 2 free spots
+        elif numFree == 2 and numWhite >= 0:
+            if sameRowCol(spacesFree[0], spacesFree[1]):
+                numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                            placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+            elif spacesFree[0][0] == 0 or spacesFree[0][0] == 7 or spacesFree[0][1] == 0 or spacesFree[0][1] == 7:
+                numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1])
+            else:
+                numWhite -= placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+        #Case 3, 3 free spots
+        elif numFree == 3 and numWhite >= 0:
+            if sameRowCol(spacesFree[0], spacesFree[1]):
+                numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                            placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+            elif sameRowCol(spacesFree[0], spacesFree[2]):
+                numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                            placeWhite(board, spacesFree[2][0], spacesFree[2][1])
+            else:
+                numWhite -= placeWhite(board, spacesFree[1][0], spacesFree[1][1]) + \
+                            placeWhite(board, spacesFree[2][0], spacesFree[2][1])
+        #final case, 4 free spots
+        elif numFree == 4 and numWhite >= 0:
+            numWhite -= placeWhite(board, spacesFree[0][0], spacesFree[0][1]) + \
+                        placeWhite(board, spacesFree[1][0], spacesFree[1][1])
+    return board
+
+
+def printBoard(board):
+    print board[0]
+    print board[1]
+    print board[2]
+    print board[3]
+    print board[4]
+    print board[5]
+    print board[6]
+    print board[7]
+    return
 
 # In[79]:
 

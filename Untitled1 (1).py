@@ -314,9 +314,6 @@ class Player:
     #8 can be changed with MAX_BOARD
     for row in range(8):
         board.append(['-','-','-','-','-','-','-','-'])
-        board_coor.append([])
-        for col in range(8):
-            board_coor[row].append((col, row))
 
     #init function which sets up the player colour
     def __init__(self, colour):
@@ -334,8 +331,8 @@ class Player:
         if turns <= 24:
             #where move = (heuristic value, position)
             move = (0, (0, 0))
-            for row in self.board_coor:
-                for col in row:
+            for row in range(len(self.board)):
+                for col in range(len(row)):
                     new_heuristic = place_heuristic(col, row)
                     if new_heuristic[0] > place_heuristic[0]:
                         # heuristic[0] = new_heuristic

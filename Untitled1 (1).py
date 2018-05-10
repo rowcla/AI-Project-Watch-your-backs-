@@ -222,3 +222,56 @@ def make_move(big_brd):
             for move in big_brd[4]:
                 
 
+def update(self, action):
+    #if turn has been made
+    if isinstance(action, tuple):
+        #if in movement phase
+        if any(isinstance(i, tuple) for i in action):
+            x1 = action[0][0]
+            y1 = action[0][1]
+            x2 = action[1][0]
+            y2 = action[1][1]
+            #update internal board with opponents movement
+            #example - need to change player colour
+            board[x1][y1] = '-'
+            board[x2][y2] = '@'
+        #else in placement phase
+        else:
+            x = action[0]
+            y = action[1]
+            #update internal board with opponents placement
+            #example - need to change player colour
+            board[x2][y2] = '@'
+        # check if any pieces eaten
+        pieces_eaten = adj_pieces_eaten(player, (x2, y2))
+        if pieces_eaten != None:
+            for piece in pieces_eaten:
+                board[piece[0]][piece[1]] = '-'
+
+def adj_pieces_eaten(player, position):
+    if player == '0':
+        opponent = '@'
+    else:
+        opponent = '0'
+
+    right = position[0]+1
+    left = position[0]-1
+    up = position[1]-1
+    down = position[1]+1
+
+    pieces_eaten = []
+
+    #check position in bounds and occupied by opponent
+    if right+1<len(board[0]):
+        if (board(right, position[1]) == opponent) and (board(right+1, position[1]) == player):
+            pieces_eaten.append((right, position[1]))
+    if left-1>=0:
+        if (board(left, position[1]) == opponent) and (board(left-1, position[1]) == player):
+            pieces_eaten.append((left, position[1]))
+    if down+1<len(board):
+        if (board(position[0], down) == opponent) and (board(position[0], down+1) == opponent):
+            pieces_eaten.append((position[0], down))
+    if up-1>=0:
+        if (board(position[0], up) == opponent) and (board(position[0], up-1) == opponent):
+            pieces_eaten.append((position[0], up))
+    return pieces_eaten

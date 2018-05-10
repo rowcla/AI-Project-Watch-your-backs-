@@ -301,7 +301,22 @@ def make_move(big_brd):
                             
     print(plus_point_moves)       
                 
-                
+def action(self, turns):
+    #placement phase
+    if turns<=24:
+        max_heuristic = (0,(0,0))
+        for space in board:
+            new_heuristic = heuristic(space[0], space[1])
+            if new_heuristic > max_heuristic[0]:
+                max_heuristic[0] = new_heuristic
+                max_heuristic[1][0] = space[0]
+                max_heuristic[1][1] = space[1]
+        #after best position found, place
+        return (max_heuristic[1][0], max_heuristic[1][1])
+    #movement phase
+    else:
+
+
 
 def update(board, action):
     #if turn has been made

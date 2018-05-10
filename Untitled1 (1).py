@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[31]:
+# In[25]:
 
 
 Smp_Brd = []
@@ -16,19 +16,21 @@ Smp_Brd.append(['X','-','-','-','-','-','-','X'])
 Smp_Brd
 
 
-# In[65]:
+# In[98]:
 
 
-
-
+import copy
+# Setup the board with relevant sub-data to go with it
 def Initialise_Board(Board, Player):
     print_brd(Board)
+    # define the edges of the board
     min_edge=0
     max_edge=7
-    
+    # Larger list to store the extra data
     big_brd=[]
     big_brd.append(Board)
     big_brd.append([])
+    # Fill in a blank board, which we'll use to keep track of capture threats on each given square
     for i in range(8):
         big_brd[1].append([])
         for j in range(8):
@@ -38,13 +40,14 @@ def Initialise_Board(Board, Player):
         big_brd[2].append([])
         for j in range(8):
             big_brd[2][i].append('-')
-    
+    # Lists of pieces for each player
     Enemy_list=[]
     Our_list=[]
     i=0
     for row in big_brd[0]:
         j=0
         for col in row:
+            # If we're black, for simplicity, rewrite the board so that we're white (we'll change it back later)
             if col == '@':
                 if Player=='@':
                     Our_list.append([i, j])
@@ -59,6 +62,15 @@ def Initialise_Board(Board, Player):
                     Our_list.append([i, j])
             j+=1
         i+=1
+    # write in threat positions for each square, based off of the relative positions of each enemy piece
+    # for the threat positions, the formatting has the final value of the string as a number, which indicates how many turns
+    # (up to 1), it takes for the capture to be made
+    # the letters encapsulate what kind of capture it is
+    # If there's only 1 letter, that means both capturing pieces are directly above and below, or directly left and right
+    # If the there's one letter, but it takes a move, that means the piece that needs to move has to move in that direction
+    # If there's 2 letters, the first letter indicates that there is a piece one square in that direction of the capture square
+    # and the second indicates that there is a piece one square in that direction, and one square in the opposite direction
+    # to the first letter
     for piece in Enemy_list:
         for piece2 in Enemy_list:
             if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])=="u0":
@@ -103,7 +115,7 @@ def Initialise_Board(Board, Player):
                 if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
                     big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]="l1"
                     
-                    
+    # Repeat the same process for our pieces too, but to store in a different list                
     for piece in Our_list:
         for piece2 in Our_list:
             if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])=="u0":
@@ -147,9 +159,12 @@ def Initialise_Board(Board, Player):
                     big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)]="r1"
                 if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
                     big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]="l1"                 
-    print_brd(big_brd[1])
+    #print_brd(big_brd[1])
+    # Store data on playable moves
     move_list=[]
+    # Store data on pieces which we can capture, or that our opponent can capture
     priority_targets=[]
+    # Fill out move_list by checking for valid moves that won't immediately kill us
     for piece in Our_list:
         if piece[0]>min_edge:
             if big_brd[1][piece[0]-1][piece[1]]=='-' and big_brd[0][piece[0]-1][piece[1]]=='-':
@@ -190,52 +205,59 @@ def Initialise_Board(Board, Player):
                     if big_brd[1][piece[0]][piece[1]+2]=='-' and big_brd[0][piece[0]][piece[1]+2]=='-':
                         move_list.append(list(piece))
                         move_list[-1].append("r2")
+        # Fill out priority targets, by checking if the opponent has any moves which allow them to take our piece                
         if big_brd[1][piece[0]][piece[1]][-1]=='1':
             
             priority_targets.append(list(piece))
             priority_targets[-1].append('S')
+    # And if we have any moves that allow us to take their piece        
     for piece in Enemy_list:
         if big_brd[2][piece[0]][piece[1]][-1]=='1':
             priority_targets.append(list(piece))
             priority_targets[-1].append('K')
     
-    print_brd(big_brd[2])
+    #print_brd(big_brd[2])
+    # Add in our extra data to the big board
     big_brd.append(priority_targets)
     big_brd.append(move_list)
-    print(priority_targets)
-    print(move_list)
-    make_move(big_brd)
-    print("done!")
-Initialise_Board(Smp_Brd, 'O')        
+    big_brd.append(Our_list)
+    big_brd.append(Enemy_list)
+    #print(priority_targets)
+    #print(move_list)
+    return big_brd
+    
+#Initialise_Board(Smp_Brd, 'O')    
+determine_move(Initialise_Board(Smp_Brd, 'O') )
 
 
-# In[64]:
+# In[36]:
 
 
+# funtion to print out the board in a readable format
+# mostly just for testing purposes
 def print_brd(Board):
     for line in Board:
         for col in line:
+            # In order to make it readable, we only print out the final value in the string
+            # Meaning on our capturable squares boards, we only print out the number of turns it takes to do so
             print(str(col)[-1], end=' ')
         print()    
     print()    
 
 
-# In[ ]:
+# In[97]:
 
 
-def analyse_aggro(big_brd):
-    
-
-
-# In[ ]:
-
-
-def make_move(big_brd):
+# function to determine the best move from the board and accompanying data
+def determine_move(big_brd):
+    # List of moves that are particularly valuable (as they save or kill a piece (or both!))
     plus_point_moves=[]
+    # Fill in the plus_point_moves list, by checking each priority target for options to capatilise on them
     for piece in big_brd[3]:
         if piece[2]=='S':
             kill_option=big_brd[1][piece[0]][piece[1]]
             for move in big_brd[4]:
+                
                 temp=[0, 0]
                 if move[2][0]=='u':
                     
@@ -263,43 +285,225 @@ def make_move(big_brd):
                         plus_point_moves.append(move)
                 if kill_option[0]=='l':
                     if temp[0]==piece[0] and temp[1]==piece[1]+1:
-                        plus_point_moves.append(move)       
+                        plus_point_moves.append(move)   
             for piece2 in big_brd[3]:
+                # Keeps track of if we can kill this particular piece
+                kill_it=0
                 if piece2[2]=='K':
-                    if kill_option[0]=='d':
+                    if kill_option[0]=="d1":
                         if piece2[0]==piece[0]+1 and piece2[1]==piece[1]:
-                            plus_point_moves.append(piece2)
-                        if kill_option[1]=='l':
-                            if piece2[0]==piece[0]-1 and piece2[1]==piece[1]-1:
-                                plus_point_moves.append(piece2)
-                        elif piece2[0]==piece[0]-1 and piece2[1]==piece[1]+1:
-                            plus_point_moves.append(piece2)
-                    if kill_option[0]=='u':
+                            kill_it=1  
+                        
+                    elif kill_option[1]=="dl1":
+                        if piece2[0]==piece[0]-1 and piece2[1]==piece[1]-1:
+                            kill_it=1
+                    elif kill_option[1]=="dr1":
+                        if piece2[0]==piece[0]-1 and piece2[1]==piece[1]+1:
+                            kill_it=1
+                    elif kill_option[0]=="u1":
                         if piece2[0]==piece[0]-1 and piece2[1]==piece[1]:
-                            plus_point_moves.append(piece2)
-                        if kill_option[1]=='l':
-                            if piece2[0]==piece[0]+1 and piece2[1]==piece[1]-1:
-                                plus_point_moves.append(piece2)
-                        elif piece2[0]==piece[0]+1 and piece2[1]==piece[1]+1:
-                            plus_point_moves.append(piece2)        
-                    if kill_option[0]=='r':
+                            kill_it=1  
+                        
+                    elif kill_option[1]=="ul1":
+                        if piece2[0]==piece[0]+1 and piece2[1]==piece[1]-1:
+                            kill_it=1
+                    elif kill_option[1]=="ur1":
+                        if piece2[0]==piece[0]+1 and piece2[1]==piece[1]+1:
+                            kill_it=1        
+                    elif kill_option[0]=="r1":
                         if piece2[0]==piece[0] and piece2[1]==piece[1]+1:
-                            plus_point_moves.append(piece2)
-                        if kill_option[1]=='u':
-                            if piece2[0]==piece[0]-1 and piece2[1]==piece[1]-1:
-                                plus_point_moves.append(piece2)
-                        elif piece2[0]==piece[0]+1 and piece2[1]==piece[1]-1:
-                            plus_point_moves.append(piece2)     
-                    if kill_option[0]=='l':
+                            kill_it=1  
+                        
+                    elif kill_option[1]=="ru1":
+                        if piece2[0]==piece[0]-1 and piece2[1]==piece[1]-1:
+                            kill_it=1
+                    elif kill_option[1]=="rd1":
+                        if piece2[0]==piece[0]+1 and piece2[1]==piece[1]-1:
+                            kill_it=1    
+                    elif kill_option[0]=="l1":
                         if piece2[0]==piece[0] and piece2[1]==piece[1]-1:
-                            plus_point_moves.append(piece2) 
-                        if kill_option[1]=='u':
-                            if piece2[0]==piece[0]-1 and piece2[1]==piece[1]+1:
-                                plus_point_moves.append(piece2)
-                        elif piece2[0]==piece[0]+1 and piece2[1]==piece[1]+1:
-                            plus_point_moves.append(piece2)     
-                            
-    print(plus_point_moves)       
+                            kill_it=1  
+                        
+                    elif kill_option[1]=="dl1":
+                        if piece2[0]==piece[0]+1 and piece2[1]==piece[1]+1:
+                            kill_it=1
+                    elif kill_option[1]=="dr1":
+                        if piece2[0]==piece[0]-1 and piece2[1]==piece[1]+1:
+                            kill_it=1
+                    if kill_it!=0:
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="d1":
+                            plus_point_moves.append([piece2[0]-2, piece2[1], "d1"])
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="u1":
+                            plus_point_moves.append([piece2[0]+2, piece2[1], "u1"])
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="l1":
+                            plus_point_moves.append([piece2[0], piece2[1]+2, "l1"])   
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="r1":
+                            plus_point_moves.append([piece2[0], piece2[1]-2, "r1"])  
+
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="dl1":
+                            plus_point_moves.append([piece2[0]-1, piece2[1]-1, "r1"])
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="dr1":
+                            plus_point_moves.append([piece2[0]-1, piece2[1]+1, "l1"])
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="ul1":
+                            plus_point_moves.append([piece2[0]+1, piece2[1]-1, "r1"])   
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="ur1":
+                            plus_point_moves.append([piece2[0]+1, piece2[1]+1, "l1"])  
+
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="ld1":
+                            plus_point_moves.append([piece2[0]+1, piece2[1]+1, "u1"])
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="ru1":
+                            plus_point_moves.append([piece2[0]-1, piece2[1]-1, "d1"])
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="lu1":
+                            plus_point_moves.append([piece2[0]-1, piece2[1]+1, "d1"])   
+                        if big_brd[2][piece2[0]][piece2[1]][2]=="rd1":
+                            plus_point_moves.append([piece2[0]+1, piece2[1]-1, "u1"])          
+        if piece[2]=='K':
+            kill_option=big_brd[2][piece[0]][piece[1]]
+            for move in big_brd[4]:
+                temp=[0, 0]
+                if move[2][0]=='u':
+                    temp[0]=move[0]-int(move[2][1])
+                    temp[1]=move[1]
+                if move[2][0]=='d':
+                    temp[0]=move[0]+int(move[2][1])
+                    temp[1]=move[1]    
+                if move[2][0]=='l':
+                    temp[1]=move[1]-int(move[2][1])
+                    temp[0]=move[0] 
+                if move[2][0]=='r':
+                    temp[1]=move[1]+int(move[2][1])
+                    temp[0]=move[0]       
+                if kill_option[0]=='d':
+                    if temp[0]==piece[0]-1 and temp[1]==piece[1]:
+                        plus_point_moves.append(move)
+                        print(move)
+                if kill_option[0]=='u':
+                    if temp[0]==piece[0]+1 and temp[1]==piece[1]:
+                        plus_point_moves.append(move)
+                        print(move)
+                if kill_option[0]=='r':
+                    if temp[0]==piece[0] and temp[1]==piece[1]-1:
+                        plus_point_moves.append(move)
+                        print(move)
+                if kill_option[0]=='l':
+                    if temp[0]==piece[0] and temp[1]==piece[1]+1:
+                        plus_point_moves.append(move) 
+                        print(move)
+    print(plus_point_moves)
+    # For each of our shortlisted moves, simulate making that move, and score them
+    best_score=-1
+    if len(plus_point_moves)!=0:
+        for move in plus_point_moves:
+            temp=copy.deepcopy(big_brd)
+            if move[2][0]=='u':
+                tup_move=((move[0], move[1]), (move[0]-int(move[2][1]), move[1]))
+            if move[2][0]=='d':
+                tup_move=((move[0], move[1]), (move[0]+int(move[2][1]), move[1]))   
+            if move[2][0]=='l':
+                tup_move=((move[0], move[1]), (move[0], move[1]-int(move[2][1])))
+            if move[2][0]=='r':       
+                tup_move=((move[0], move[1]), (move[0], move[1]+int(move[2][1])))
+            temp[0][tup_move[0][0]][tup_move[0][1]]='-'
+            temp[0][tup_move[1][0]][tup_move[1][1]]='O'
+            # Check each direction to see if we can take a piece
+            # Use try here to avoid index errors
+            try:
+                if temp[0][tup_move[1][0]-1][tup_move[1][1]]=='@':
+                    if temp[0][tup_move[1][0]-2][tup_move[1][1]][0]=='O':
+                        temp[0][tup_move[1][0]-1][tup_move[1][1]]='-'
+            except:
+                pass
+            try:        
+                if temp[0][tup_move[1][0]+1][tup_move[1][1]]=='@':
+                    if temp[0][tup_move[1][0]+1][tup_move[1][1]][0]=='O':
+                        temp[0][tup_move[1][0]+1][tup_move[1][1]]='-'
+            except:
+                pass
+            try:        
+                if temp[0][tup_move[1][0]][tup_move[1][1]-1]=='@':
+                    if temp[0][tup_move[1][0]][tup_move[1][1]-1][0]=='O':
+                        temp[0][tup_move[1][0]-1][tup_move[1][1]-1]='-'
+            except:
+                pass
+            try:        
+                if temp[0][tup_move[1][0]][tup_move[1][1]+1]=='@':
+                    if temp[0][tup_move[1][0]][tup_move[1][1]+1][0]=='O':
+                        temp[0][tup_move[1][0]][tup_move[1][1]+1]='-'
+            except:    
+                pass        
+            # Once we have a proper board, initialise the board, then score it        
+            temp=Initialise_Board(temp[0], 'O')
+            temp_score=score_position(temp)
+            # If the score is the highest yet, mark that, and store the move
+            if temp_score>best_score:
+                
+                best_move=tup_move
+                best_score=temp_score
+            #update(temp, tup_move)
+print("ready!")            
+
+
+# In[55]:
+
+
+# funtion to score the centre control of the player
+# Does so by increasing the score based on how close they are to the centre
+def analyse_centre_control(big_brd):
+    
+    score=0
+    for piece in big_brd[5]:
+        temp=piece[0]
+        temp2=piece[1]
+        if temp>3:
+            temp=7-temp
+        if temp2>3:
+            temp2=7-temp2
+        score+=(temp+temp2)**2
+    return score    
+        
+
+
+# In[56]:
+
+
+# function to score the quality of the structures within the board (the general formation)
+# Does so by checking for proximity of pieces, and increasing score based off of how close they are, and how many other pieces
+# are close by
+def analyse_structure_quality(big_brd):
+    score=0
+    for piece in big_brd[5]:
+        mod=0
+        for piece2 in big_brd[5]:
+            if abs(piece[0]-piece2[0])+abs(piece[1]-piece2[1])<3:
+                score+=(3-abs(piece[0]-piece2[0])+abs(piece[1]-piece2[1])+mod)**2
+                mod+=1
+    return score            
+
+
+# In[ ]:
+
+
+# function to score the relative positioning of the player to the opponent, based off of their potential to threaten the
+# opponent in meaningful ways
+def analyse_aggro(big_brd):
+    score=0
+    for piece in big_brd
+
+
+# In[71]:
+
+
+# function to combine all the scoring functions, with tweakable mods which control the significance of each function
+def score_position(big_brd):
+    #print(big_brd)
+    score=0
+    centre_adjuster=1
+    struct_adjuster=1
+    score=analyse_centre_control(big_brd)*centre_adjuster+analyse_structure_quality(big_brd)*struct_adjuster
+    return score
+
+
+
 
 
 class Player:

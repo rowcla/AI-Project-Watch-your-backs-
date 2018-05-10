@@ -11,12 +11,13 @@ Smp_Brd.append(['-','-','-','O','O','@','-','-'])
 Smp_Brd.append(['-','-','O','-','-','@','-','-'])
 Smp_Brd.append(['-','O','-','-','@','-','-','-'])
 Smp_Brd.append(['-','-','@','-','O','@','-','-'])
-Smp_Brd.append(['-','-','O','@','-','-','-','-'])
+Smp_Brd.append(['-','-','O','O','-','-','O','-'])
 Smp_Brd.append(['X','-','-','-','-','-','-','X'])
 Smp_Brd
 
 
 # In[65]:
+
 
 
 
@@ -60,34 +61,47 @@ def Initialise_Board(Board, Player):
         i+=1
     for piece in Enemy_list:
         for piece2 in Enemy_list:
-            if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])==0:
+            if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])=="u0":
                 big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]=0
-            if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])==0:
+            if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])=="l0":
                 big_brd[1][int((piece2[1]+piece[1])/2)][piece[0]]=0
                 
             if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])==1:
-                if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
-                    big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]=1
-                if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
-                    big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]=1
-                    
+                if piece2[0]>piece[0]:
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
+                        big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]="ur1"
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
+                        big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]="dl1"
+                if piece2[0]<piece[0]:
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
+                        big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]="dr1"
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
+                        big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]="ul1"
+
+                        
             if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])==1:
-                if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
-                    big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]=1
-                if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
-                    big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]=1
+                if piece2[1]>piece[1]:
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
+                        big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]="lu1"
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
+                        big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]="rd1"
+                if piece2[1]<piece[1]:
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
+                        big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]="ru1"
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
+                        big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]="ld1"       
                     
             if abs(piece[0]-piece2[0])==3 and abs(piece[1]-piece2[1])==0:
-                if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]]!=0:
-                    big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]]=1
-                if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]]!=0:    
-                    big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]]=1
+                if big_brd[0][int((piece2[0]+piece[0]-1)/2)][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]]!=0:
+                    big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]]="d1"
+                if big_brd[0][int((piece2[0]+piece[0]+1)/2)][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]]!=0:    
+                    big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]]="u1"
                     
             if abs(piece[1]-piece2[1])==3 and abs(piece[0]-piece2[0])==0:
-                if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)]!=0:
-                    big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)]=1
-                if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
-                    big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]=1 
+                if big_brd[0][piece[0]][int((piece2[1]+piece[1]-1)/2)]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)]!=0:
+                    big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)]="r1"
+                if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
+                    big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]="l1"
                     
                     
     for piece in Our_list:
@@ -123,15 +137,15 @@ def Initialise_Board(Board, Player):
                         big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)]="ld1"       
                     
             if abs(piece[0]-piece2[0])==3 and abs(piece[1]-piece2[1])==0:
-                if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]+1)/2)][piece[1]]!=0:
+                if big_brd[0][int((piece2[0]+piece[0]-1)/2)][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]+1)/2)][piece[1]]!=0:
                     big_brd[2][int((piece2[0]+piece[0]+1)/2)][piece[1]]="d1"
-                if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]-1)/2)][piece2[1]]!=0:    
+                if big_brd[0][int((piece2[0]+piece[0]+1)/2)][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]-1)/2)][piece2[1]]!=0:    
                     big_brd[2][int((piece2[0]+piece[0]-1)/2)][piece2[1]]="u1"
                     
             if abs(piece[1]-piece2[1])==3 and abs(piece[0]-piece2[0])==0:
-                if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)]!=0:
+                if big_brd[0][piece[0]][int((piece2[1]+piece[1]-1)/2)]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)]!=0:
                     big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)]="r1"
-                if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
+                if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
                     big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]="l1"                 
     print_brd(big_brd[1])
     move_list=[]
@@ -140,59 +154,59 @@ def Initialise_Board(Board, Player):
         if piece[0]>min_edge:
             if big_brd[1][piece[0]-1][piece[1]]=='-' and big_brd[0][piece[0]-1][piece[1]]=='-':
                 move_list.append(list(piece))
-                move_list[-1].append("l1")
+                move_list[-1].append("u1")
             if big_brd[0][piece[0]-1][piece[1]]=='@' or big_brd[0][piece[0]-1][piece[1]]=='O':
                 if piece[0]>min_edge+1:
                     if big_brd[1][piece[0]-2][piece[1]]=='-' and big_brd[0][piece[0]-2][piece[1]]=='-':
                         move_list.append(list(piece))
-                        move_list[-1].append("l2")
+                        move_list[-1].append("u2")
                         
         if piece[1]>min_edge:
             if big_brd[1][piece[0]][piece[1]-1]=='-' and big_brd[0][piece[0]][piece[1]-1]=='-':
                 move_list.append(list(piece))
-                move_list[-1].append("u1")
+                move_list[-1].append("l1")
             if big_brd[0][piece[0]][piece[1]-1]=='@' or big_brd[0][piece[0]][piece[1]-1]=='O':
                 if piece[1]>min_edge+1:
                     if big_brd[1][piece[0]][piece[1]-2]=='-' and big_brd[0][piece[0]][piece[1]-2]=='-':
                         move_list.append(list(piece))
-                        move_list[-1].append("u2")
+                        move_list[-1].append("l2")
                         
         if piece[0]<max_edge:
             if big_brd[1][piece[0]+1][piece[1]]=='-' and big_brd[0][piece[0]+1][piece[1]]=='-':
                 move_list.append(list(piece))
-                move_list[-1].append("r1")
+                move_list[-1].append("d1")
             if big_brd[0][piece[0]+1][piece[1]]=='@' or big_brd[0][piece[0]+1][piece[1]]=='O':
-                if piece[0]>max_edge-1:
+                if piece[0]<max_edge-1:
                     if big_brd[1][piece[0]+2][piece[1]]=='-' and big_brd[0][piece[0]+2][piece[1]]=='-':
                         move_list.append(list(piece))
-                        move_list[-1].append("r2")
+                        move_list[-1].append("d2")
                         
         if piece[1]<max_edge:
             if big_brd[1][piece[0]][piece[1]+1]=='-' and big_brd[0][piece[0]][piece[1]+1]=='-':
                 move_list.append(list(piece))
-                move_list[-1].append("d1")
+                move_list[-1].append("r1")
             if big_brd[0][piece[0]][piece[1]+1]=='@' or big_brd[0][piece[0]][piece[1]+1]=='O':
-                if piece[1]>max_edge-1:
+                if piece[1]<max_edge-1:
                     if big_brd[1][piece[0]][piece[1]+2]=='-' and big_brd[0][piece[0]][piece[1]+2]=='-':
                         move_list.append(list(piece))
-                        move_list[-1].append("d2")
-        if big_brd[1][piece[0]][piece[1]]==1:
-            for piece in Enemy_list:
-                print()
-                #if piece[0]
+                        move_list[-1].append("r2")
+        if big_brd[1][piece[0]][piece[1]][-1]=='1':
+            
             priority_targets.append(list(piece))
             priority_targets[-1].append('S')
     for piece in Enemy_list:
         if big_brd[2][piece[0]][piece[1]][-1]=='1':
             priority_targets.append(list(piece))
             priority_targets[-1].append('K')
-    print_brd(big_brd[1])
+    
     print_brd(big_brd[2])
+    big_brd.append(priority_targets)
+    big_brd.append(move_list)
     print(priority_targets)
     print(move_list)
-
+    make_move(big_brd)
     print("done!")
-Initialise_Board(Smp_Brd, 'O')    
+Initialise_Board(Smp_Brd, 'O')        
 
 
 # In[64]:
@@ -217,9 +231,76 @@ def analyse_aggro(big_brd):
 
 
 def make_move(big_brd):
+    plus_point_moves=[]
     for piece in big_brd[3]:
-        if piece[2]='S':
+        if piece[2]=='S':
+            kill_option=big_brd[1][piece[0]][piece[1]]
             for move in big_brd[4]:
+                temp=[0, 0]
+                if move[2][0]=='u':
+                    
+                    temp[0]=move[0]-int(move[2][1])
+                    temp[1]=move[1]
+                if move[2][0]=='d':
+                    temp[0]=move[0]+int(move[2][1])
+                    temp[1]=move[1]    
+                if move[2][0]=='l':
+                    temp[1]=move[1]-int(move[2][1])
+                    temp[0]=move[0] 
+                if move[2][0]=='r':
+                    temp[1]=move[1]+int(move[2][1])
+                    temp[0]=move[0]       
+                if move[0]==piece[0] and move[1]==piece[1]:
+                    plus_point_moves.append(move)
+                if kill_option[0]=='d':
+                    if temp[0]==piece[0]-1 and temp[1]==piece[1]:
+                        plus_point_moves.append(move)
+                if kill_option[0]=='u':
+                    if temp[0]==piece[0]+1 and temp[1]==piece[1]:
+                        plus_point_moves.append(move)
+                if kill_option[0]=='r':
+                    if temp[0]==piece[0] and temp[1]==piece[1]-1:
+                        plus_point_moves.append(move)
+                if kill_option[0]=='l':
+                    if temp[0]==piece[0] and temp[1]==piece[1]+1:
+                        plus_point_moves.append(move)       
+            for piece2 in big_brd[3]:
+                if piece2[2]=='K':
+                    if kill_option[0]=='d':
+                        if piece2[0]==piece[0]+1 and piece2[1]==piece[1]:
+                            plus_point_moves.append(piece2)
+                        if kill_option[1]=='l':
+                            if piece2[0]==piece[0]-1 and piece2[1]==piece[1]-1:
+                                plus_point_moves.append(piece2)
+                        elif piece2[0]==piece[0]-1 and piece2[1]==piece[1]+1:
+                            plus_point_moves.append(piece2)
+                    if kill_option[0]=='u':
+                        if piece2[0]==piece[0]-1 and piece2[1]==piece[1]:
+                            plus_point_moves.append(piece2)
+                        if kill_option[1]=='l':
+                            if piece2[0]==piece[0]+1 and piece2[1]==piece[1]-1:
+                                plus_point_moves.append(piece2)
+                        elif piece2[0]==piece[0]+1 and piece2[1]==piece[1]+1:
+                            plus_point_moves.append(piece2)        
+                    if kill_option[0]=='r':
+                        if piece2[0]==piece[0] and piece2[1]==piece[1]+1:
+                            plus_point_moves.append(piece2)
+                        if kill_option[1]=='u':
+                            if piece2[0]==piece[0]-1 and piece2[1]==piece[1]-1:
+                                plus_point_moves.append(piece2)
+                        elif piece2[0]==piece[0]+1 and piece2[1]==piece[1]-1:
+                            plus_point_moves.append(piece2)     
+                    if kill_option[0]=='l':
+                        if piece2[0]==piece[0] and piece2[1]==piece[1]-1:
+                            plus_point_moves.append(piece2) 
+                        if kill_option[1]=='u':
+                            if piece2[0]==piece[0]-1 and piece2[1]==piece[1]+1:
+                                plus_point_moves.append(piece2)
+                        elif piece2[0]==piece[0]+1 and piece2[1]==piece[1]+1:
+                            plus_point_moves.append(piece2)     
+                            
+    print(plus_point_moves)       
+                
                 
 
 def update(board, action):

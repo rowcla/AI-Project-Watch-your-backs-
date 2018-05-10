@@ -303,14 +303,20 @@ def make_move(big_brd):
 
 
 class Player:
+
     colour = ''
     opponent_colour = ''
     pieces_remaining = 0
     board = []
+    board_coor = []
+
     #creates empty board
-    #7 can be changed with MAX_BOARD
-    for i in range(7):
+    #8 can be changed with MAX_BOARD
+    for row in range(8):
         board.append(['-','-','-','-','-','-','-','-'])
+        board_coor.append([])
+        for col in range(8):
+            board_coor[row].append((col, row))
 
     #init function which sets up the player colour
     def __init__(self, colour):
@@ -323,23 +329,40 @@ class Player:
 
     #action function which returns the next move
     def action(self, turns):
+        #this function assumes that place_heuristic and row_heuristic return in the same form as their respective moves
         # placement phase
         if turns <= 24:
-            max_heuristic = (0, (0, 0))
-            for row in self.board:
-                for space in row:
-                    new_heuristic = heuristic(space[0], space[1])
-                    if new_heuristic > max_heuristic[0]:
-                        max_heuristic[0] = new_heuristic
-                       max_heuristic[1][0] = space[0]
-                       max_heuristic[1][1] = space[1]
+            #where move = (heuristic value, position)
+            move = (0, (0, 0))
+            for row in self.board_coor:
+                for col in row:
+                    new_heuristic = place_heuristic(col, row)
+                    if new_heuristic[0] > place_heuristic[0]:
+                        # heuristic[0] = new_heuristic
+                        # heuristic[1][0] = col
+                        # heuristic[1][1] = row
+                        move = new_heuristic
         # movement phase
         else:
+            #where move = (heuristic value, next position, previous position)
+            move = (0, (0, 0), (0, 0))
+            for row in self.board_coor:
+                for col in row:
+                    if self.board[col][row] == self.colour:
+                        new_heuristic = move_heuristic(col, row)
+                        if new_heuristic > move_heuristic[0]:
+                            # heuristic[0] = new_heuristic[0]
+                            # heuristic[1][0] = new_heuristic[2][0]
+                            # heuristic[1][1] = new_heuristic[2][1]
+                            # heuristic[2][0] = col
+                            # heuristic[2][1] = row
+                            move = new_heuristic
             #need to make sure to change piece that is being moved inside else
-            self.board[piece_moved[0]][piece_moved[1]] = '-'
+            self.board[move[2][0]][move[2][1]] = '-'
+
         #once best move chosen, save it in internal board and return move
-        self.board[max_heuristic[1][0]][max_heuristic[1][1]] = self.colour
-        return (max_heuristic[1][0], max_heuristic[1][1])
+        self.board[move[1][0]][move[1][1]] = self.colour
+        return (move[1][0], move[1][1])
 
 
     #update function which updates the self board with next action
@@ -362,7 +385,7 @@ class Player:
                 # update internal board with opponents placement
                 self.board[x][y] = self.colour
             # check if any pieces eaten
-            pieces_eaten = adj_pieces_eaten(player, (x2, y2))
+            pieces_eaten = adj_pieces_eaten(self, (x2, y2))
             if pieces_eaten != None:
                 for piece in pieces_eaten:
                     self.board[piece[0]][piece[1]] = '-'

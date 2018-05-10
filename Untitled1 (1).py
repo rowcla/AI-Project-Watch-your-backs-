@@ -300,74 +300,99 @@ def make_move(big_brd):
                             plus_point_moves.append(piece2)     
                             
     print(plus_point_moves)       
-                
-def action(self, turns):
-    #placement phase
-    if turns<=24:
-        max_heuristic = (0,(0,0))
-        for space in board:
-            new_heuristic = heuristic(space[0], space[1])
-            if new_heuristic > max_heuristic[0]:
-                max_heuristic[0] = new_heuristic
-                max_heuristic[1][0] = space[0]
-                max_heuristic[1][1] = space[1]
-        #after best position found, place
-        return (max_heuristic[1][0], max_heuristic[1][1])
-    #movement phase
-    else:
 
 
+class Player:
+    colour = ''
+    opponent_colour = ''
+    pieces_remaining = 0
+    board = []
+    #creates empty board
+    #7 can be changed with MAX_BOARD
+    for i in range(7):
+        board.append(['-','-','-','-','-','-','-','-'])
 
-def update(board, action):
-    #if turn has been made
-    if isinstance(action, tuple):
-        #if in movement phase
-        if any(isinstance(i, tuple) for i in action):
-            x1 = action[0][0]
-            y1 = action[0][1]
-            x2 = action[1][0]
-            y2 = action[1][1]
-            #update internal board with opponents movement
-            #example - need to change player colour
-            board[x1][y1] = '-'
-            board[x2][y2] = '@'
-        #else in placement phase
+    #init function which sets up the player colour
+    def __init__(self, colour):
+        self.colour = colour
+        if colour == '0':
+            self.opponent_colour = '@'
         else:
-            x = action[0]
-            y = action[1]
-            #update internal board with opponents placement
-            #example - need to change player colour
-            board[x2][y2] = '@'
-        # check if any pieces eaten
-        pieces_eaten = adj_pieces_eaten(player, (x2, y2))
-        if pieces_eaten != None:
-            for piece in pieces_eaten:
-                board[piece[0]][piece[1]] = '-'
+            self.opponent_colour = '0'
+        #maybe keep track of heuristic here and constantly update it within action()
 
-def adj_pieces_eaten(player, position):
-    if player == '0':
-        opponent = '@'
-    else:
-        opponent = '0'
+    #action function which returns the next move
+    def action(self, turns):
+        # placement phase
+        if turns <= 24:
+            max_heuristic = (0, (0, 0))
+            for row in self.board:
+                for space in row:
+                    new_heuristic = heuristic(space[0], space[1])
+                    if new_heuristic > max_heuristic[0]:
+                        max_heuristic[0] = new_heuristic
+                       max_heuristic[1][0] = space[0]
+                       max_heuristic[1][1] = space[1]
+        # movement phase
+        else:
+            #need to make sure to change piece that is being moved inside else
+            self.board[piece_moved[0]][piece_moved[1]] = '-'
+        #once best move chosen, save it in internal board and return move
+        self.board[max_heuristic[1][0]][max_heuristic[1][1]] = self.colour
+        return (max_heuristic[1][0], max_heuristic[1][1])
 
-    right = position[0]+1
-    left = position[0]-1
-    up = position[1]-1
-    down = position[1]+1
 
-    pieces_eaten = []
+    #update function which updates the self board with next action
+    def update(self, action):
+        # if turn has been made (not None)
+        if isinstance(action, tuple):
+            # if in movement phase
+            if any(isinstance(i, tuple) for i in action):
+                x1 = action[0][0]
+                y1 = action[0][1]
+                x2 = action[1][0]
+                y2 = action[1][1]
+                # update internal board with opponents movement
+                self.board[x1][y1] = '-'
+                self.board[x2][y2] = self.colour
+            # else in placement phase
+            else:
+                x = action[0]
+                y = action[1]
+                # update internal board with opponents placement
+                self.board[x][y] = self.colour
+            # check if any pieces eaten
+            pieces_eaten = adj_pieces_eaten(player, (x2, y2))
+            if pieces_eaten != None:
+                for piece in pieces_eaten:
+                    self.board[piece[0]][piece[1]] = '-'
 
-    #check position in bounds and occupied by opponent
-    if right+1<len(board[0]):
-        if (board(right, position[1]) == opponent) and (board(right+1, position[1]) == player):
-            pieces_eaten.append((right, position[1]))
-    if left-1>=0:
-        if (board(left, position[1]) == opponent) and (board(left-1, position[1]) == player):
-            pieces_eaten.append((left, position[1]))
-    if down+1<len(board):
-        if (board(position[0], down) == opponent) and (board(position[0], down+1) == opponent):
-            pieces_eaten.append((position[0], down))
-    if up-1>=0:
-        if (board(position[0], up) == opponent) and (board(position[0], up-1) == opponent):
-            pieces_eaten.append((position[0], up))
-    return pieces_eaten
+    def adj_pieces_eaten(self, position):
+
+        board = self.board
+        player = self.colour
+        opponent = self.opponent_colour
+
+        right = position[0] + 1
+        left = position[0] - 1
+        up = position[1] - 1
+        down = position[1] + 1
+
+        pieces_eaten = []
+
+        # check position in bounds and occupied by opponent
+        if right + 1 < len(board[0]):
+            if (board(right, position[1]) == opponent) and (board(right + 1, position[1]) == player):
+                pieces_eaten.append((right, position[1]))
+        if left - 1 >= 0:
+            if (board(left, position[1]) == opponent) and (board(left - 1, position[1]) == player):
+                pieces_eaten.append((left, position[1]))
+        if down + 1 < len(board):
+            if (board(position[0], down) == opponent) and (board(position[0], down + 1) == opponent):
+                pieces_eaten.append((position[0], down))
+        if up - 1 >= 0:
+            if (board(position[0], up) == opponent) and (board(position[0], up - 1) == opponent):
+                pieces_eaten.append((position[0], up))
+        return pieces_eaten
+
+

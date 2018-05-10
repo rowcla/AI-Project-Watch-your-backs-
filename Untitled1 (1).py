@@ -222,7 +222,7 @@ def make_move(big_brd):
             for move in big_brd[4]:
                 
 
-def update(self, action):
+def update(board, action):
     #if turn has been made
     if isinstance(action, tuple):
         #if in movement phase

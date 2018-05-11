@@ -635,6 +635,7 @@ class Player:
         board = self.board
         player = self.colour
         opponent = self.opponent_colour
+        corner = 'X'
 
         right = position[0] + 1
         left = position[0] - 1
@@ -645,20 +646,44 @@ class Player:
 
         # check position in bounds and occupied by opponent
         if right + 1 < len(board[0]):
-            if (board(right, position[1]) == opponent) and (board(right + 1, position[1]) == player):
+            if (board(right, position[1]) == opponent) and \
+                    ((board(right + 1, position[1]) == player) or (board(right + 1, position[1]) == corner)):
                 pieces_eaten.append((right, position[1]))
         if left - 1 >= 0:
-            if (board(left, position[1]) == opponent) and (board(left - 1, position[1]) == player):
+            if (board(left, position[1]) == opponent) and \
+                    ((board(left - 1, position[1]) == player) or (board(left - 1, position[1]) == corner)):
                 pieces_eaten.append((left, position[1]))
         if down + 1 < len(board):
-            if (board(position[0], down) == opponent) and (board(position[0], down + 1) == opponent):
+            if (board(position[0], down) == opponent) and \
+                    ((board(position[0], down + 1) == opponent) or (board(down + 1, position[1]) == corner)):
                 pieces_eaten.append((position[0], down))
         if up - 1 >= 0:
-            if (board(position[0], up) == opponent) and (board(position[0], up - 1) == opponent):
+            if (board(position[0], up) == opponent) and \
+                    ((board(position[0], up - 1) == opponent) or (board(up - 1, position[1]) == corner)):
                 pieces_eaten.append((position[0], up))
         return pieces_eaten
 
-    def place_heuristic(col, row, self):
+    def place_heuristic(self, col, row):
         score = score_position(Initialise_Board(self.board, self.colour ))
 
-    def move_unsafe
+    def move_unsafe(self, col, row):
+        board = self.board
+        player = self.colour
+        opponent = self.opponent_colour
+        corner = 'X'
+
+        right = col + 1
+        left = col - 1
+        up = row - 1
+        down = row + 1
+
+        if (right < len(board[0])) and (left >= 0):
+            if ((board(right, position[1]) == opponent) or (board(right, position[1]) == corner)) and \
+                    ((board(left, position[1]) == opponent) or (board(left, position[1]) == corner)):
+                return True
+        if (down < len(board[0])) and (up >= 0):
+            if ((board(down, position[1]) == opponent) or (board(down, position[1]) == corner)) and \
+                    ((board(up, position[1]) == opponent) or (board(up, position[1]) == corner)):
+                return True
+        else:
+            return False

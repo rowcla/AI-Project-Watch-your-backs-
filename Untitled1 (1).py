@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[25]:
+# In[1]:
 
 
 Smp_Brd = []
@@ -16,7 +16,7 @@ Smp_Brd.append(['X','-','-','-','-','-','-','X'])
 Smp_Brd
 
 
-# In[98]:
+# In[59]:
 
 
 import copy
@@ -73,46 +73,46 @@ def Initialise_Board(Board, Player):
     # to the first letter
     for piece in Enemy_list:
         for piece2 in Enemy_list:
-            if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])=="u0":
-                big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]=0
-            if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])=="l0":
-                big_brd[1][int((piece2[1]+piece[1])/2)][piece[0]]=0
+            if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])==0:
+                big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]="u0"
+            if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])==0:
+                big_brd[1][int((piece2[1]+piece[1])/2)][piece[0]]="l0"
                 
             if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])==1:
                 if piece2[0]>piece[0]:
-                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]][-1]!='0':
                         big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]="ur1"
-                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]][-1]!='0':    
                         big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]="dl1"
                 if piece2[0]<piece[0]:
-                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]][-1]!='0':
                         big_brd[1][int((piece2[0]+piece[0])/2)][piece[1]]="dr1"
-                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]][-1]!='0':    
                         big_brd[1][int((piece2[0]+piece[0])/2)][piece2[1]]="ul1"
 
                         
             if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])==1:
                 if piece2[1]>piece[1]:
-                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]="lu1"
-                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]="rd1"
                 if piece2[1]<piece[1]:
-                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece[0]][piece2[1]]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[1][piece[0]][int((piece2[1]+piece[1])/2)]="ru1"
-                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[1][piece2[0]][int((piece2[1]+piece[1])/2)]="ld1"       
                     
             if abs(piece[0]-piece2[0])==3 and abs(piece[1]-piece2[1])==0:
-                if big_brd[0][int((piece2[0]+piece[0]-1)/2)][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]]!=0:
+                if big_brd[0][int((piece2[0]+piece[0]-1)/2)][piece[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]][-1]!='0':
                     big_brd[1][int((piece2[0]+piece[0]+1)/2)][piece[1]]="d1"
-                if big_brd[0][int((piece2[0]+piece[0]+1)/2)][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]]!=0:    
+                if big_brd[0][int((piece2[0]+piece[0]+1)/2)][piece2[1]]!='O' and big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]][-1]!='0':    
                     big_brd[1][int((piece2[0]+piece[0]-1)/2)][piece2[1]]="u1"
                     
             if abs(piece[1]-piece2[1])==3 and abs(piece[0]-piece2[0])==0:
-                if big_brd[0][piece[0]][int((piece2[1]+piece[1]-1)/2)]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)]!=0:
+                if big_brd[0][piece[0]][int((piece2[1]+piece[1]-1)/2)]!='O' and big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)][-1]!='0':
                     big_brd[1][piece[0]][int((piece2[1]+piece[1]+1)/2)]="r1"
-                if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
+                if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='O' and big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)][-1]!='0':
                     big_brd[1][piece2[0]][int((piece2[1]+piece[1]-1)/2)]="l1"
                     
     # Repeat the same process for our pieces too, but to store in a different list                
@@ -125,39 +125,39 @@ def Initialise_Board(Board, Player):
                 
             if abs(piece[0]-piece2[0])==2 and abs(piece[1]-piece2[1])==1:
                 if piece2[0]>piece[0]:
-                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece[1]][-1]!='0':
                         big_brd[2][int((piece2[0]+piece[0])/2)][piece[1]]="ur1"
-                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
+                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece2[1]][-1]!='0':    
                         big_brd[2][int((piece2[0]+piece[0])/2)][piece2[1]]="dl1"
                 if piece2[0]<piece[0]:
-                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece[1]]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece[1]][-1]!='0':
                         big_brd[2][int((piece2[0]+piece[0])/2)][piece[1]]="dr1"
-                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece2[1]]!=0:    
+                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0])/2)][piece2[1]][-1]!='0':    
                         big_brd[2][int((piece2[0]+piece[0])/2)][piece2[1]]="ul1"
 
                         
             if abs(piece[1]-piece2[1])==2 and abs(piece[0]-piece2[0])==1:
                 if piece2[1]>piece[1]:
-                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[2][piece[0]][int((piece2[1]+piece[1])/2)]="lu1"
-                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)]="rd1"
                 if piece2[1]<piece[1]:
-                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece[0]][piece2[1]]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[2][piece[0]][int((piece2[1]+piece[1])/2)]="ru1"
-                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)]!=0:
+                    if big_brd[0][piece2[0]][piece[1]]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)][-1]!='0':
                         big_brd[2][piece2[0]][int((piece2[1]+piece[1])/2)]="ld1"       
                     
             if abs(piece[0]-piece2[0])==3 and abs(piece[1]-piece2[1])==0:
-                if big_brd[0][int((piece2[0]+piece[0]-1)/2)][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]+1)/2)][piece[1]]!=0:
+                if big_brd[0][int((piece2[0]+piece[0]-1)/2)][piece[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]+1)/2)][piece[1]][-1]!='0':
                     big_brd[2][int((piece2[0]+piece[0]+1)/2)][piece[1]]="d1"
-                if big_brd[0][int((piece2[0]+piece[0]+1)/2)][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]-1)/2)][piece2[1]]!=0:    
+                if big_brd[0][int((piece2[0]+piece[0]+1)/2)][piece2[1]]!='@' and big_brd[2][int((piece2[0]+piece[0]-1)/2)][piece2[1]][-1]!='0':    
                     big_brd[2][int((piece2[0]+piece[0]-1)/2)][piece2[1]]="u1"
                     
             if abs(piece[1]-piece2[1])==3 and abs(piece[0]-piece2[0])==0:
-                if big_brd[0][piece[0]][int((piece2[1]+piece[1]-1)/2)]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)]!=0:
+                if big_brd[0][piece[0]][int((piece2[1]+piece[1]-1)/2)]!='@' and big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)][-1]!='0':
                     big_brd[2][piece[0]][int((piece2[1]+piece[1]+1)/2)]="r1"
-                if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]!=0:
+                if big_brd[0][piece2[0]][int((piece2[1]+piece[1]+1)/2)]!='@' and big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)][-1]!='0':
                     big_brd[2][piece2[0]][int((piece2[1]+piece[1]-1)/2)]="l1"                 
     #print_brd(big_brd[1])
     # Store data on playable moves
@@ -227,10 +227,10 @@ def Initialise_Board(Board, Player):
     return big_brd
     
 #Initialise_Board(Smp_Brd, 'O')    
-determine_move(Initialise_Board(Smp_Brd, 'O'))
+determine_move(Initialise_Board(Smp_Brd, 'O') )
 
 
-# In[36]:
+# In[13]:
 
 
 # funtion to print out the board in a readable format
@@ -245,7 +245,7 @@ def print_brd(Board):
     print()    
 
 
-# In[97]:
+# In[58]:
 
 
 # function to determine the best move from the board and accompanying data
@@ -376,19 +376,19 @@ def determine_move(big_brd):
                 if kill_option[0]=='d':
                     if temp[0]==piece[0]-1 and temp[1]==piece[1]:
                         plus_point_moves.append(move)
-                        print(move)
+                        
                 if kill_option[0]=='u':
                     if temp[0]==piece[0]+1 and temp[1]==piece[1]:
                         plus_point_moves.append(move)
-                        print(move)
+                        
                 if kill_option[0]=='r':
                     if temp[0]==piece[0] and temp[1]==piece[1]-1:
                         plus_point_moves.append(move)
-                        print(move)
+                        
                 if kill_option[0]=='l':
                     if temp[0]==piece[0] and temp[1]==piece[1]+1:
                         plus_point_moves.append(move) 
-                        print(move)
+                        
     print(plus_point_moves)
     # For each of our shortlisted moves, simulate making that move, and score them
     best_score=-1
@@ -409,25 +409,26 @@ def determine_move(big_brd):
             # Use try here to avoid index errors
             try:
                 if temp[0][tup_move[1][0]-1][tup_move[1][1]]=='@':
-                    if temp[0][tup_move[1][0]-2][tup_move[1][1]][0]=='O':
+                    if temp[0][tup_move[1][0]-2][tup_move[1][1]]=='O':
                         temp[0][tup_move[1][0]-1][tup_move[1][1]]='-'
             except:
                 pass
             try:        
                 if temp[0][tup_move[1][0]+1][tup_move[1][1]]=='@':
-                    if temp[0][tup_move[1][0]+1][tup_move[1][1]][0]=='O':
+                    if temp[0][tup_move[1][0]+2][tup_move[1][1]]=='O':
                         temp[0][tup_move[1][0]+1][tup_move[1][1]]='-'
             except:
                 pass
-            try:        
+            try:      
+                
                 if temp[0][tup_move[1][0]][tup_move[1][1]-1]=='@':
-                    if temp[0][tup_move[1][0]][tup_move[1][1]-1][0]=='O':
-                        temp[0][tup_move[1][0]-1][tup_move[1][1]-1]='-'
+                    if temp[0][tup_move[1][0]][tup_move[1][1]-2]=='O':
+                        temp[0][tup_move[1][0]][tup_move[1][1]-1]='-'
             except:
                 pass
             try:        
                 if temp[0][tup_move[1][0]][tup_move[1][1]+1]=='@':
-                    if temp[0][tup_move[1][0]][tup_move[1][1]+1][0]=='O':
+                    if temp[0][tup_move[1][0]][tup_move[1][1]+2]=='O':
                         temp[0][tup_move[1][0]][tup_move[1][1]+1]='-'
             except:    
                 pass        
@@ -439,11 +440,15 @@ def determine_move(big_brd):
                 
                 best_move=tup_move
                 best_score=temp_score
+                print("best=")
+                print_brd(temp[0])
+                print_brd(temp[1])
+                print_brd(temp[2])
             #update(temp, tup_move)
 print("ready!")            
 
 
-# In[55]:
+# In[17]:
 
 
 # funtion to score the centre control of the player
@@ -459,11 +464,20 @@ def analyse_centre_control(big_brd):
         if temp2>3:
             temp2=7-temp2
         score+=(temp+temp2)**2
+    for piece in big_brd[6]:
+        temp=piece[0]
+        temp2=piece[1]
+        if temp>3:
+            temp=7-temp
+        if temp2>3:
+            temp2=7-temp2
+        score-=(temp+temp2)**2
+        
     return score    
         
 
 
-# In[56]:
+# In[48]:
 
 
 # function to score the quality of the structures within the board (the general formation)
@@ -475,32 +489,57 @@ def analyse_structure_quality(big_brd):
         mod=0
         for piece2 in big_brd[5]:
             if abs(piece[0]-piece2[0])+abs(piece[1]-piece2[1])<3:
-                score+=(3-abs(piece[0]-piece2[0])+abs(piece[1]-piece2[1])+mod)**2
+                score+=(3-abs(piece[0]-piece2[0]))**2+(3-abs(piece[1]-piece2[1]))**2+mod
                 mod+=1
+    for piece in big_brd[6]:
+        mod=0
+        for piece2 in big_brd[5]:
+            if abs(piece[0]-piece2[0])+abs(piece[1]-piece2[1])<3:
+                score-=(3-abs(piece[0]-piece2[0])+abs(piece[1]-piece2[1])+mod)**2
+                mod+=1            
     return score            
 
 
-# In[ ]:
+# In[37]:
 
 
 # function to score the relative positioning of the player to the opponent, based off of their potential to threaten the
 # opponent in meaningful ways
 def analyse_aggro(big_brd):
     score=0
-    for piece in big_brd
+    for row in big_brd[2]:
+        for piece in row:
+            if piece!='-':
+                score+=(3-int(piece[-1]))**2
+    for row in big_brd[1]:            
+        for piece in row:
+            if piece!='-':
+                score-=(3-int(piece[-1]))**2
+    return score        
 
 
-# In[71]:
+# In[45]:
 
 
 # function to combine all the scoring functions, with tweakable mods which control the significance of each function
 def score_position(big_brd):
     #print(big_brd)
     score=0
-    centre_adjuster=1
+    centre_adjuster=3
     struct_adjuster=1
-    score=analyse_centre_control(big_brd)*centre_adjuster+analyse_structure_quality(big_brd)*struct_adjuster
+    aggro_adjuster=10
+    print(analyse_centre_control(big_brd))
+    print(analyse_structure_quality(big_brd))
+    print(analyse_aggro(big_brd))
+    score=analyse_centre_control(big_brd)*centre_adjuster+analyse_structure_quality(big_brd)*struct_adjuster    +aggro_adjuster*analyse_aggro(big_brd)
     return score
+
+
+# In[ ]:
+
+
+
+
 
 
 

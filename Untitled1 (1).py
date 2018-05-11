@@ -227,7 +227,7 @@ def Initialise_Board(Board, Player):
     return big_brd
     
 #Initialise_Board(Smp_Brd, 'O')    
-determine_move(Initialise_Board(Smp_Brd, 'O') )
+determine_move(Initialise_Board(Smp_Brd, 'O'))
 
 
 # In[36]:
@@ -512,7 +512,6 @@ class Player:
     opponent_colour = ''
     pieces_remaining = 0
     board = []
-    board_coor = []
 
     #creates empty board
     #8 can be changed with MAX_BOARD
@@ -537,18 +536,19 @@ class Player:
             move = (0, (0, 0))
             for row in range(len(self.board)):
                 for col in range(len(row)):
-                    new_heuristic = place_heuristic(col, row)
-                    if new_heuristic[0] > place_heuristic[0]:
-                        # heuristic[0] = new_heuristic
-                        # heuristic[1][0] = col
-                        # heuristic[1][1] = row
-                        move = new_heuristic
+                    if self.board[col][row] == '-':
+                        new_heuristic = place_heuristic(col, row)
+                        if new_heuristic[0] > place_heuristic[0]:
+                            # heuristic[0] = new_heuristic
+                            # heuristic[1][0] = col
+                            # heuristic[1][1] = row
+                            move = new_heuristic
         # movement phase
         else:
             #where move = (heuristic value, next position, previous position)
             move = (0, (0, 0), (0, 0))
-            for row in self.board_coor:
-                for col in row:
+            for row in range(len(self.board)):
+                for col in range(len(row)):
                     if self.board[col][row] == self.colour:
                         new_heuristic = move_heuristic(col, row)
                         if new_heuristic > move_heuristic[0]:
@@ -587,7 +587,7 @@ class Player:
                 self.board[x][y] = self.colour
             # check if any pieces eaten
             pieces_eaten = adj_pieces_eaten(self, (x2, y2))
-            if pieces_eaten != None:
+            if pieces_eaten:
                 for piece in pieces_eaten:
                     self.board[piece[0]][piece[1]] = '-'
 
@@ -619,4 +619,7 @@ class Player:
                 pieces_eaten.append((position[0], up))
         return pieces_eaten
 
+    def place_heuristic(col, row, self):
+        score = score_position(Initialise_Board(self.board, self.colour ))
 
+    def move_unsafe

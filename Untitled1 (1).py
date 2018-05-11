@@ -578,7 +578,7 @@ class Player:
             for row in range(len(self.board)):
                 for col in range(len(row)):
                     if self.board[col][row] == '-':
-                        new_heuristic = place_heuristic(col, row)
+                        new_heuristic = place_heuristic(self, col, row)
                         if new_heuristic[0] > place_heuristic[0]:
                             # heuristic[0] = new_heuristic
                             # heuristic[1][0] = col
@@ -600,9 +600,11 @@ class Player:
                             # heuristic[2][1] = row
                             move = new_heuristic
             #need to make sure to change piece that is being moved inside else
+            update_kill_piece(self, self.colour, move[2][0], move[2][1])
             self.board[move[2][0]][move[2][1]] = '-'
 
         #once best move chosen, save it in internal board and return move
+        update_place_piece(self, self.colour, move[1][0], move[1][1])
         self.board[move[1][0]][move[1][1]] = self.colour
         return (move[1][0], move[1][1])
 
@@ -626,10 +628,12 @@ class Player:
                 y = action[1]
                 # update internal board with opponents placement
                 self.board[x][y] = self.colour
+                update_place_piece(self, self.opponent_colour, x, y)
             # check if any pieces eaten
             pieces_eaten = adj_pieces_eaten(self, (x2, y2))
             if pieces_eaten:
                 for piece in pieces_eaten:
+                    update_kill_piece(self, self.board[piece[0]][piece[1]], piece[0], piece[1])
                     self.board[piece[0]][piece[1]] = '-'
 
     def adj_pieces_eaten(self, position):
@@ -709,7 +713,7 @@ class Player:
         board = self.board
         player = self.colour
         opponent = self.opponent_colour
-        # big_brd = Initialise_Board(board, player)
+        big_brd = Initialise_Board(board, player)
         score = 0
 
         # check if any opponent pieces eaten in move
@@ -717,9 +721,9 @@ class Player:
         if pieces_eaten:
             for piece in pieces_eaten:
                 if board[piece[0]][piece[1]] == opponent:
-                    score += 10
+                    score += 20
                 elif board[piece[0]][piece[1]] == player:
-                    score -= 10
+                    score -= 30
 
         #check if any opponent pieces threatened by move
         pieces_threatened = adj_pieces_threatened(self, (col, row))
@@ -728,18 +732,25 @@ class Player:
                 if board[piece[0]][piece[1]] == opponent:
                     score += 5
                 elif board[piece[0]][piece[1]] == player:
-                    score -= 5
+                    score -= 10
 
         #check if move endangers kills our piece
         if move_unsafe(self, col, row):
-            score -= 10
+            score -= 30
 
+        #check if move aids center control
+        cent_score = analyse_aggro(big_brd)
+        #add factored cent_score into overall score
+        score += cent_score / 10
 
+        #check if move aids structure quality
+        struct_score = analyse_structure_quality(big_brd)
+        # add factored cent_score into overall score
+        score += struct_score / 20
 
+        return (score, (col, row))
 
-
-
-    def move_unsafe(self, col, row):
+def move_unsafe(self, col, row):
         board = self.board
         opponent = self.opponent_colour
         corner = 'X'
@@ -782,4 +793,14 @@ class Player:
         else:
             return False
 
+    def update_place_piece(self, player, col, row):
+        if player == self.colour:
+            self.allied_pieces.append((col, row))
+        else:
+            self.enemy_pieces.append((col, row))
 
+    def update_kill_piece(self, player, col, row):
+        if player == self.colour:
+            self.allied_pieces.remove((col, row))
+        else:
+            self.allied_pieces.remove((col, row))

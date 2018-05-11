@@ -734,21 +734,22 @@ class Player:
                 elif board[piece[0]][piece[1]] == player:
                     score -= 10
 
-        #check if move endangers kills our piece
+        #suppose check if move endangers kills our piece but might be redundant because of elif in pieces eaten
         if move_unsafe(self, col, row):
             score -= 30
 
         #check if move aids center control
         cent_score = analyse_aggro(big_brd)
         #add factored cent_score into overall score
-        score += cent_score / 10
+        score += cent_score / 8
 
         #check if move aids structure quality
         struct_score = analyse_structure_quality(big_brd)
         # add factored cent_score into overall score
         score += struct_score / 20
 
-        return (score, (col, row))
+        move = (score, (col, row))
+        return move
 
 def move_unsafe(self, col, row):
         board = self.board

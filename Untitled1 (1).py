@@ -1238,29 +1238,21 @@ class Player:
                             # heuristic[1][0] = col
                             # heuristic[1][1] = row
                             move = new_heuristic
-        # movement phase
+            #once best move chosen, save it in internal board and return move
+            update_place_piece(self, self.colour, move[1][0], move[1][1])
+            self.board[move[1][0]][move[1][1]] = self.colour
+            return (move[1][0], move[1][1])                
+            # movement phase
         else:
-            #where move = (heuristic value, next position, previous position)
-            move = (0, (0, 0), (0, 0))
-            for row in range(len(self.board)):
-                for col in range(len(row)):
-                    if self.board[col][row] == self.colour:
-                        new_heuristic = move_heuristic(col, row)
-                        if new_heuristic > move_heuristic[0]:
-                            # heuristic[0] = new_heuristic[0]
-                            # heuristic[1][0] = new_heuristic[2][0]
-                            # heuristic[1][1] = new_heuristic[2][1]
-                            # heuristic[2][0] = col
-                            # heuristic[2][1] = row
-                            move = new_heuristic
+            #where move = (prev position, next position)
+            move = determine_move(self.board, self.colour, 3, 3)
             #need to make sure to change piece that is being moved inside else
-            update_kill_piece(self, self.colour, move[2][0], move[2][1])
-            self.board[move[2][0]][move[2][1]] = '-'
-
-        #once best move chosen, save it in internal board and return move
-        update_place_piece(self, self.colour, move[1][0], move[1][1])
-        self.board[move[1][0]][move[1][1]] = self.colour
-        return (move[1][0], move[1][1])
+            update_kill_piece(self, self.colour, move[0][1], move[0][0])
+            self.board[move[0][1]][move[0][0]] = '-'
+            #once best move chosen, save it in internal board and return move
+            update_place_piece(self, self.colour, move[0][1], move[0][0])
+            self.board[move[1][0]][move[1][1]] = self.colour
+            return (move[1][1], move[1][0])
 
 
     #update function which updates the self board with next action

@@ -646,20 +646,20 @@ class Player:
 
         # check position in bounds and occupied by opponent
         if right + 1 < len(board[0]):
-            if (board(right, position[1]) == opponent) and \
-                    ((board(right + 1, position[1]) == player) or (board(right + 1, position[1]) == corner)):
+            if (board[right][position[1]] == opponent) and \
+                    ((board[right + 1][position[1]] == player) or (board[right + 1][position[1]] == corner)):
                 pieces_eaten.append((right, position[1]))
         if left - 1 >= 0:
-            if (board(left, position[1]) == opponent) and \
-                    ((board(left - 1, position[1]) == player) or (board(left - 1, position[1]) == corner)):
+            if (board[left][position[1]] == opponent) and \
+                    ((board[left - 1][position[1]] == player) or (board[left - 1][position[1]] == corner)):
                 pieces_eaten.append((left, position[1]))
         if down + 1 < len(board):
-            if (board(position[0], down) == opponent) and \
-                    ((board(position[0], down + 1) == opponent) or (board(down + 1, position[1]) == corner)):
+            if (board[position[0]][down] == opponent) and \
+                    ((board[position[0]][down + 1]) == player) or (board[position[0]][down + 1]) == corner)):
                 pieces_eaten.append((position[0], down))
         if up - 1 >= 0:
-            if (board(position[0], up) == opponent) and \
-                    ((board(position[0], up - 1) == opponent) or (board(up - 1, position[1]) == corner)):
+            if (board[position[0]][up] == opponent) and \
+                    ((board[position[0]][up - 1]) == player) or (board[position[0]][up - 1]) == corner)):
                 pieces_eaten.append((position[0], up))
         return pieces_eaten
 
@@ -668,7 +668,6 @@ class Player:
 
     def move_unsafe(self, col, row):
         board = self.board
-        player = self.colour
         opponent = self.opponent_colour
         corner = 'X'
 
@@ -678,12 +677,12 @@ class Player:
         down = row + 1
 
         if (right < len(board[0])) and (left >= 0):
-            if ((board(right, position[1]) == opponent) or (board(right, position[1]) == corner)) and \
-                    ((board(left, position[1]) == opponent) or (board(left, position[1]) == corner)):
+            if ((board[right][row] == opponent) or (board[right][row] == corner)) and \
+                    ((board[left][row] == opponent) or (board[left][row] == corner)):
                 return True
         if (down < len(board[0])) and (up >= 0):
-            if ((board(down, position[1]) == opponent) or (board(down, position[1]) == corner)) and \
-                    ((board(up, position[1]) == opponent) or (board(up, position[1]) == corner)):
+            if ((board[down][col] == opponent) or (board[down][col] == corner)) and \
+                    ((board[up][col] == opponent) or (board[up][col] == corner)):
                 return True
         else:
             return False

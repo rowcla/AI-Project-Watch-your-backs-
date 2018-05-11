@@ -900,7 +900,6 @@ def determine_move(big_brd, player, depth, max_depth):
                     if temp[0]==piece[0] and temp[1]==piece[1]+1:
                         plus_point_moves.append(move) 
                         
-    print(plus_point_moves)
     # For each of our shortlisted moves, simulate making that move, and score them
     best_score=-10000000
     short_list=[]
@@ -1015,9 +1014,6 @@ def determine_move(big_brd, player, depth, max_depth):
                     short_list[-1]=best_move
                     short_list.sort(key=itemgetter(1))
                 best_score=short_list[-1][1]
-                print_brd(temp[0])
-                print_brd(temp[1])
-                print_brd(temp[2])
     if len(short_list)==0:
         if depth!=max_depth:
             return 10000000-1
@@ -1059,7 +1055,6 @@ def determine_move(big_brd, player, depth, max_depth):
     best_score=10000000
     best_move=[]
     for move in short_list:
-        print(move)
         temp=copy.deepcopy(big_brd[0])
         temp[move[0][0][0]][move[0][0][1]]='-'
         temp[move[0][1][0]][move[0][1][1]]=player
@@ -1095,16 +1090,11 @@ def determine_move(big_brd, player, depth, max_depth):
             best_move=move
             best_score=score
     if depth!=max_depth:
-        print(best_move)
-        print(player)
-        print(depth)
-        print(short_list)
         return best_move[1]
     else:
         return best_move[0]    
         
-    
-print("ready!")            
+              
 
 
 # In[17]:
@@ -1181,14 +1171,10 @@ def analyse_aggro(big_brd):
 
 # function to combine all the scoring functions, with tweakable mods which control the significance of each function
 def score_position(big_brd):
-    #print(big_brd)
     score=0
     centre_adjuster=5
     struct_adjuster=2
     aggro_adjuster=14
-    print(analyse_centre_control(big_brd))
-    print(analyse_structure_quality(big_brd))
-    print(analyse_aggro(big_brd))
     score=analyse_centre_control(big_brd)*centre_adjuster+analyse_structure_quality(big_brd)*struct_adjuster    +aggro_adjuster*analyse_aggro(big_brd)
     return score
 
@@ -1203,39 +1189,7 @@ def score_position(big_brd):
 
 
 
-# function to score the relative positioning of the player to the opponent, based off of their potential to threaten the
-# opponent in meaningful ways
-def analyse_aggro(big_brd):
-    score=0
-    for row in big_brd[2]:
-        for piece in row:
-            if piece!='-':
-                score+=(3-int(piece[-1]))**2
-    for row in big_brd[1]:            
-        for piece in row:
-            if piece!='-':
-                score-=(3-int(piece[-1]))**2
-    return score        
 
-
-# In[45]:
-
-
-# function to combine all the scoring functions, with tweakable mods which control the significance of each function
-def score_position(big_brd):
-    #print(big_brd)
-    score=0
-    centre_adjuster=3
-    struct_adjuster=1
-    aggro_adjuster=10
-    print(analyse_centre_control(big_brd))
-    print(analyse_structure_quality(big_brd))
-    print(analyse_aggro(big_brd))
-    score=analyse_centre_control(big_brd)*centre_adjuster+analyse_structure_quality(big_brd)*struct_adjuster    +aggro_adjuster*analyse_aggro(big_brd)
-    return score
-
-
-# In[ ]:
 
 
 

@@ -551,6 +551,8 @@ class Player:
     opponent_colour = ''
     pieces_remaining = 0
     board = []
+    allied_pieces = []
+    enemy_pieces = []
 
     #creates empty board
     #8 can be changed with MAX_BOARD
@@ -633,8 +635,7 @@ class Player:
     def adj_pieces_eaten(self, position):
 
         board = self.board
-        player = self.colour
-        opponent = self.opponent_colour
+        players = [self.colour, self.opponent_colour]
         corner = 'X'
 
         right = position[0] + 1
@@ -644,27 +645,99 @@ class Player:
 
         pieces_eaten = []
 
-        # check position in bounds and occupied by opponent
-        if right + 1 < len(board[0]):
-            if (board[right][position[1]] == opponent) and \
-                    ((board[right + 1][position[1]] == player) or (board[right + 1][position[1]] == corner)):
-                pieces_eaten.append((right, position[1]))
-        if left - 1 >= 0:
-            if (board[left][position[1]] == opponent) and \
-                    ((board[left - 1][position[1]] == player) or (board[left - 1][position[1]] == corner)):
-                pieces_eaten.append((left, position[1]))
-        if down + 1 < len(board):
-            if (board[position[0]][down] == opponent) and \
-                    ((board[position[0]][down + 1]) == player) or (board[position[0]][down + 1]) == corner)):
-                pieces_eaten.append((position[0], down))
-        if up - 1 >= 0:
-            if (board[position[0]][up] == opponent) and \
-                    ((board[position[0]][up - 1]) == player) or (board[position[0]][up - 1]) == corner)):
-                pieces_eaten.append((position[0], up))
+        #iterate for 2 cases, player piece eaten or opponent
+        for player in players:
+            if player == self.colour:
+                opponent = self.opponent_colour
+            else:
+                opponent = self.colour
+            # check position in bounds and occupied by opponent
+            if right + 1 < len(board[0]):
+                if (board[right][position[1]] == opponent) and \
+                        ((board[right + 1][position[1]] == player) or (board[right + 1][position[1]] == corner)):
+                    pieces_eaten.append((right, position[1]))
+            if left - 1 >= 0:
+                if (board[left][position[1]] == opponent) and \
+                        ((board[left - 1][position[1]] == player) or (board[left - 1][position[1]] == corner)):
+                    pieces_eaten.append((left, position[1]))
+            if down + 1 < len(board):
+                if (board[position[0]][down] == opponent) and \
+                        ((board[position[0]][down + 1]) == player) or (board[position[0]][down + 1]) == corner)):
+                    pieces_eaten.append((position[0], down))
+            if up - 1 >= 0:
+                if (board[position[0]][up] == opponent) and \
+                        ((board[position[0]][up - 1]) == player) or (board[position[0]][up - 1]) == corner)):
+                    pieces_eaten.append((position[0], up))
         return pieces_eaten
 
+    def adj_pieces_threatened(self, position):
+
+        board = self.board
+        players = [self.colour, self.opponent_colour]
+        corner = 'X'
+        empty = '-'
+
+        right = position[0] + 1
+        left = position[0] - 1
+        up = position[1] - 1
+        down = position[1] + 1
+
+        pieces_threatened = []
+
+        #iterate for 2 cases, player piece eaten or opponent
+        for player in players:
+            if player == self.colour:
+                opponent = self.opponent_colour
+            else:
+                opponent = self.colour
+            # check position in bounds and occupied by opponent
+            if right + 1 < len(board[0]):
+                if (board[right][position[1]] == opponent) and (board[right + 1][position[1]] == empty):
+                    pieces_threatened.append((right, position[1]))
+            if left - 1 >= 0:
+                if (board[left][position[1]] == opponent) and (board[left - 1][position[1]] == empty):
+                    pieces_threatened.append((left, position[1]))
+            if down + 1 < len(board):
+                if (board[position[0]][down] == opponent) and (board[position[0]][down + 1]) == empty):
+                    pieces_threatened.append((position[0], down))
+            if up - 1 >= 0:
+                if (board[position[0]][up] == opponent) and (board[position[0]][up - 1]) == empty):
+                    pieces_threatened.append((position[0], up))
+        return pieces_threatened
+
     def place_heuristic(self, col, row):
-        score = score_position(Initialise_Board(self.board, self.colour ))
+        board = self.board
+        player = self.colour
+        opponent = self.opponent_colour
+        # big_brd = Initialise_Board(board, player)
+        score = 0
+
+        # check if any opponent pieces eaten in move
+        pieces_eaten = adj_pieces_eaten(self, (col, row))
+        if pieces_eaten:
+            for piece in pieces_eaten:
+                if board[piece[0]][piece[1]] == opponent:
+                    score += 10
+                elif board[piece[0]][piece[1]] == player:
+                    score -= 10
+
+        #check if any opponent pieces threatened by move
+        pieces_threatened = adj_pieces_threatened(self, (col, row))
+        if pieces_threatened:
+            for piece in pieces_threatened:
+                if board[piece[0]][piece[1]] == opponent:
+                    score += 5
+                elif board[piece[0]][piece[1]] == player:
+                    score -= 5
+
+        #check if move endangers kills our piece
+        if move_unsafe(self, col, row):
+            score -= 10
+
+
+
+
+
 
     def move_unsafe(self, col, row):
         board = self.board
@@ -686,3 +759,27 @@ class Player:
                 return True
         else:
             return False
+
+    def kill_move(self, col, row):
+        board = self.board
+        player = self.colour
+        opponent = self.opponent_colour
+        corner = 'X'
+
+        right = col + 1
+        left = col - 1
+        up = row - 1
+        down = row + 1
+
+        if (right < len(board[0])) and (left >= 0):
+            if ((board[right][row] == opponent) or (board[right][row] == corner)) and \
+                    ((board[left][row] == opponent) or (board[left][row] == corner)):
+                return True
+        if (down < len(board[0])) and (up >= 0):
+            if ((board[down][col] == opponent) or (board[down][col] == corner)) and \
+                    ((board[up][col] == opponent) or (board[up][col] == corner)):
+                return True
+        else:
+            return False
+
+
